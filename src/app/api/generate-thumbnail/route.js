@@ -3,6 +3,7 @@ import { auth } from '@clerk/nextjs/server';
 import sharp from 'sharp';
 import { GoogleGenAI, Modality } from '@google/genai';
 import * as fs from 'node:fs';
+import * as path from 'node:path';
 import { connectDB } from '@/lib/mongo';
 import Project from '@/models/Project';
 import Image from '@/models/Image';
@@ -280,10 +281,17 @@ async function processGeneratedImages(
 	conversation = null,
 	aiResponseText = ''
 ) {
-	// Create generated_images directory if it doesn't exist (for temporary storage)
-	const outputDir = './generated_images';
-	if (!fs.existsSync(outputDir)) {
-		fs.mkdirSync(outputDir, { recursive: true });
+	// Use Vercel's temporary directory instead of creating a local directory
+	const outputDir = '/tmp';
+	
+	// Ensure the tmp directory exists (it should on Vercel, but check anyway)
+	try {
+		if (!fs.existsSync(outputDir)) {
+			fs.mkdirSync(outputDir, { recursive: true });
+		}
+	} catch (error) {
+		console.error('Could not access temp directory:', error);
+		// If we can't use /tmp, proceed without local file storage
 	}
 
 	const thumbnails = [];
@@ -296,19 +304,26 @@ async function processGeneratedImages(
 			const imageData = part.inlineData.data;
 			const buffer = Buffer.from(imageData, 'base64');
 
-			// Create temporary filename
+			// Create temporary filename for Vercel's /tmp directory
 			const tempFilename = projectId
 				? `${isEditMode ? 'edited_' : ''}project_${projectId}_${Date.now()}_${imageCount}.png`
 				: `${isEditMode ? 'edited_' : ''}user_${userId}_${Date.now()}_${imageCount}.png`;
 
-			const tempFilepath = `${outputDir}/${tempFilename}`;
+			const tempFilepath = path.join(outputDir, tempFilename);
 
 			try {
-				// 1. Temporarily save to local filesystem
-				fs.writeFileSync(tempFilepath, buffer);
-				console.log(`📁 Temporary image saved: ${tempFilename}`);
+				// 1. Temporarily save to Vercel's /tmp filesystem (optional - for debugging)
+				let tempFileCreated = false;
+				try {
+					fs.writeFileSync(tempFilepath, buffer);
+					tempFileCreated = true;
+					console.log(`📁 Temporary image saved: ${tempFilename}`);
+				} catch (tempError) {
+					console.warn('Could not save temp file (proceeding without):', tempError.message);
+					// Continue without temp file - we can still upload to Cloudinary
+				}
 
-				// 2. Upload to Cloudinary
+				// 2. Upload directly to Cloudinary from buffer
 				const cloudinaryResult = await uploadToCloudinary(buffer, {
 					projectId,
 					userId,
@@ -332,8 +347,6 @@ async function processGeneratedImages(
 					bytes: cloudinaryResult.bytes,
 					createdAt: new Date(),
 					projectId: projectId,
-					// Keep local path for immediate cleanup reference
-					tempLocalPath: tempFilepath,
 				};
 
 				// 4. Save to database if projectId exists
@@ -414,16 +427,18 @@ async function processGeneratedImages(
 					`☁️ Image uploaded to Cloudinary: ${cloudinaryResult.cloudinaryId}`
 				);
 
-				// 5. Delete local file immediately after successful upload
-				try {
-					fs.unlinkSync(tempFilepath);
-					console.log(`🗑️ Local file deleted: ${tempFilename}`);
-				} catch (deleteError) {
-					console.warn(
-						`⚠️ Warning: Could not delete local file ${tempFilename}:`,
-						deleteError.message
-					);
-					// Don't throw error, continue with next image
+				// 5. Delete local temp file immediately after successful upload (if it was created)
+				if (tempFileCreated) {
+					try {
+						fs.unlinkSync(tempFilepath);
+						console.log(`🗑️ Local temp file deleted: ${tempFilename}`);
+					} catch (deleteError) {
+						console.warn(
+							`⚠️ Warning: Could not delete temp file ${tempFilename}:`,
+							deleteError.message
+						);
+						// Don't throw error, continue with next image
+					}
 				}
 			} catch (uploadError) {
 				console.error(
@@ -431,7 +446,7 @@ async function processGeneratedImages(
 					uploadError
 				);
 
-				// Clean up local file even if upload failed
+				// Clean up local file even if upload failed (if it exists)
 				try {
 					if (fs.existsSync(tempFilepath)) {
 						fs.unlinkSync(tempFilepath);
@@ -472,5 +487,3 @@ async function updateProjectThumbnails(project, newThumbnails) {
 		console.error('Error updating project thumbnails:', error);
 	}
 }
-
-// Create an engaging YouTube thumbnail featuring {user_image} with an enthusiastic smile while holding the steering wheel. Use a scenic road background with clear blue skies and lush green trees. Employ a vibrant color scheme with bright blues and greens. Add text 'Epic Driving Adventures!' in bold, eye-catching font at the bottom. Ensure lively lighting, clear focal point, and 16:9 aspect ratio.
