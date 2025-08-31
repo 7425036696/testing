@@ -95,7 +95,12 @@ export default function ThumbnailGallery() {
 		return (
 			<div className="max-w-6xl mx-auto p-6">
 				<div className="flex items-center justify-center py-12">
-					<div className="w-8 h-8 border-2 border-orange-500 border-t-transparent rounded-full animate-spin"></div>
+					<div className="flex flex-col items-center gap-4">
+						<div className="w-12 h-12 border-3 border-blue-400 border-t-transparent rounded-full animate-spin shadow-lg shadow-blue-500/30"></div>
+						<div className="text-xl font-semibold bg-gradient-to-r from-blue-400 via-cyan-300 to-blue-400 bg-clip-text text-transparent">
+							Loading Gallery...
+						</div>
+					</div>
 				</div>
 			</div>
 		);
@@ -108,7 +113,7 @@ export default function ThumbnailGallery() {
 			{/* Enhanced Header with Stats */}
 			<div className="mb-8">
 				<div className="text-center mb-8">
-					<h1 className="text-4xl font-bold text-white mb-2 bg-gradient-to-r from-orange-400 to-orange-600 bg-clip-text text-transparent">
+					<h1 className="text-4xl font-bold text-white mb-2 bg-gradient-to-r from-blue-400 via-cyan-300 to-blue-400 bg-clip-text text-transparent">
 						Your Gallery
 					</h1>
 					<p className="text-gray-400 text-lg">
@@ -117,18 +122,18 @@ export default function ThumbnailGallery() {
 				</div>
 				
 				<div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-					<div className="bg-gradient-to-br from-orange-500/20 to-orange-600/10 border border-orange-500/30 rounded-xl p-6 text-center hover:shadow-lg hover:shadow-orange-500/25 transition-all duration-300">
-						<div className="text-3xl font-bold text-orange-400 mb-2">{stats.totalCount}</div>
+					<div className="bg-gradient-to-br from-slate-900/60 via-blue-950/40 to-slate-900/60 backdrop-blur-xl border border-blue-900/30 rounded-xl p-6 text-center hover:shadow-lg hover:shadow-blue-500/20 transition-all duration-300">
+						<div className="text-3xl font-bold text-blue-400 mb-2">{stats.totalCount}</div>
 						<div className="text-sm text-gray-300 font-medium">Total Thumbnails</div>
 					</div>
-					<div className="bg-gradient-to-br from-red-500/20 to-red-600/10 border border-red-500/30 rounded-xl p-6 text-center hover:shadow-lg hover:shadow-red-500/25 transition-all duration-300">
-						<div className="text-3xl font-bold text-red-400 mb-2">{stats.youtubeCount}</div>
+					<div className="bg-gradient-to-br from-slate-900/60 via-blue-950/40 to-slate-900/60 backdrop-blur-xl border border-blue-900/30 rounded-xl p-6 text-center hover:shadow-lg hover:shadow-cyan-500/20 transition-all duration-300">
+						<div className="text-3xl font-bold text-cyan-400 mb-2">{stats.youtubeCount}</div>
 						<div className="text-sm text-gray-300 font-medium flex items-center justify-center">
 							<span className="mr-1">📺</span>YouTube Thumbnails
 						</div>
 					</div>
-					<div className="bg-gradient-to-br from-purple-500/20 to-purple-600/10 border border-purple-500/30 rounded-xl p-6 text-center hover:shadow-lg hover:shadow-purple-500/25 transition-all duration-300">
-						<div className="text-3xl font-bold text-purple-400 mb-2">{stats.reelsCount}</div>
+					<div className="bg-gradient-to-br from-slate-900/60 via-blue-950/40 to-slate-900/60 backdrop-blur-xl border border-blue-900/30 rounded-xl p-6 text-center hover:shadow-lg hover:shadow-blue-400/20 transition-all duration-300">
+						<div className="text-3xl font-bold text-blue-300 mb-2">{stats.reelsCount}</div>
 						<div className="text-sm text-gray-300 font-medium flex items-center justify-center">
 							<span className="mr-1">📱</span>Reels Thumbnails
 						</div>
@@ -139,13 +144,13 @@ export default function ThumbnailGallery() {
 			{/* Enhanced Tabs */}
 			<div className="mb-8">
 				<div className="flex justify-center">
-					<div className="flex space-x-2 bg-gray-900/50 p-2 rounded-xl border border-gray-800 backdrop-blur-sm">
+					<div className="flex space-x-2 bg-slate-900/50 p-2 rounded-xl border border-blue-900/30 backdrop-blur-sm">
 						<button
 							onClick={() => setActiveTab('youtube')}
 							className={`flex items-center space-x-3 px-6 py-3 rounded-lg font-medium transition-all duration-200 ${
 								activeTab === 'youtube'
-									? 'bg-red-500 text-white shadow-lg shadow-red-500/25 scale-105'
-									: 'text-gray-400 hover:text-white hover:bg-gray-800/50'
+									? 'bg-gradient-to-r from-blue-500 to-cyan-500 text-white shadow-lg shadow-blue-500/25 scale-105'
+									: 'text-gray-400 hover:text-white hover:bg-slate-800/50'
 							}`}
 						>
 							<span className="text-lg">📺</span>
@@ -158,8 +163,8 @@ export default function ThumbnailGallery() {
 							onClick={() => setActiveTab('reels')}
 							className={`flex items-center space-x-3 px-6 py-3 rounded-lg font-medium transition-all duration-200 ${
 								activeTab === 'reels'
-									? 'bg-purple-500 text-white shadow-lg shadow-purple-500/25 scale-105'
-									: 'text-gray-400 hover:text-white hover:bg-gray-800/50'
+									? 'bg-gradient-to-r from-cyan-500 to-blue-600 text-white shadow-lg shadow-cyan-500/25 scale-105'
+									: 'text-gray-400 hover:text-white hover:bg-slate-800/50'
 							}`}
 						>
 							<span className="text-lg">📱</span>
@@ -186,7 +191,7 @@ export default function ThumbnailGallery() {
 					</p>
 					<button
 						onClick={() => router.push('/dashboard')}
-						className="bg-orange-500 hover:bg-orange-600 text-white px-6 py-3 rounded-lg font-medium transition-colors"
+						className="bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-400 hover:to-cyan-400 text-white px-6 py-3 rounded-lg font-medium transition-all duration-300"
 					>
 						Create New Project
 					</button>
@@ -200,10 +205,10 @@ export default function ThumbnailGallery() {
 					{currentThumbnails.map((thumbnail) => (
 						<div
 							key={thumbnail._id}
-							className="group bg-gray-900 border border-gray-800 rounded-xl overflow-hidden hover:border-orange-500/50 transition-all duration-300 hover:transform hover:scale-105 hover:shadow-2xl hover:shadow-orange-500/20"
+							className="group bg-gradient-to-br from-slate-900/60 via-blue-950/40 to-slate-900/60 backdrop-blur-xl border border-blue-900/30 rounded-xl overflow-hidden hover:border-blue-700/50 transition-all duration-300 hover:transform hover:scale-105 hover:shadow-2xl hover:shadow-blue-500/20"
 						>
 							{/* Thumbnail Image with Proper Aspect Ratios */}
-							<div className={`relative bg-gray-800 overflow-hidden ${
+							<div className={`relative bg-slate-800 overflow-hidden ${
 								activeTab === 'youtube' 
 									? 'aspect-[16/9]' 
 									: 'aspect-[9/16]'
@@ -226,7 +231,7 @@ export default function ThumbnailGallery() {
 								<div className="absolute bottom-3 left-3 right-3 flex justify-center space-x-3 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-2 group-hover:translate-y-0">
 									<button
 										onClick={() => handleDownload(thumbnail)}
-										className="bg-orange-500 hover:bg-orange-600 text-white p-2.5 rounded-lg transition-all duration-200 shadow-lg hover:shadow-orange-500/25"
+										className="bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-400 hover:to-cyan-400 text-white p-2.5 rounded-lg transition-all duration-200 shadow-lg hover:shadow-blue-500/25"
 										title="Download Thumbnail"
 									>
 										<svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -235,7 +240,7 @@ export default function ThumbnailGallery() {
 									</button>
 									<button
 										onClick={() => handleViewProject(thumbnail)}
-										className="bg-blue-500 hover:bg-blue-600 text-white p-2.5 rounded-lg transition-all duration-200 shadow-lg hover:shadow-blue-500/25"
+										className="bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white p-2.5 rounded-lg transition-all duration-200 shadow-lg hover:shadow-cyan-500/25"
 										title="View Project"
 									>
 										<svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -243,8 +248,6 @@ export default function ThumbnailGallery() {
 										</svg>
 									</button>
 								</div>
-
-								{/* Project Type Badge */}
 							</div>
 
 							{/* Enhanced Thumbnail Info */}
@@ -261,7 +264,7 @@ export default function ThumbnailGallery() {
 									</p>
 								)}
 								
-								<div className="pt-2 border-t border-gray-800">
+								<div className="pt-2 border-t border-blue-900/30">
 									<p className="text-xs text-gray-500 flex items-center">
 										<svg className="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 											<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />

@@ -1,4 +1,3 @@
-import 'dotenv/config';
 import { NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
 import sharp from 'sharp';
@@ -201,7 +200,7 @@ async function generateThumbnailsWithGoogleGenAI(
 	isEditMode = false,
 	conversation = null
 ) {
-	const ai = new GoogleGenAI({});
+	const ai = new GoogleGenAI({apiKey: process.env.GOOGLE_IMAGE_KEY});
 
 	let enhancedPrompt;
 	

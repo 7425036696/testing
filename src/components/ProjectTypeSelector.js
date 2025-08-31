@@ -11,8 +11,8 @@ const projectTypes = [
 		description: 'Create thumbnails for YouTube videos',
 		aspectRatio: '16:9',
 		icon: '📺',
-		gradient: 'from-red-500 to-red-600',
-		hoverGradient: 'from-red-400 to-red-500',
+		gradient: 'from-blue-500 to-cyan-500',
+		hoverGradient: 'from-blue-400 to-cyan-400',
 	},
 	{
 		id: 'reels',
@@ -20,8 +20,8 @@ const projectTypes = [
 		description: 'Create thumbnails for Instagram/YouTube Reels',
 		aspectRatio: '9:16',
 		icon: '📱',
-		gradient: 'from-purple-500 to-pink-500',
-		hoverGradient: 'from-purple-400 to-pink-400',
+		gradient: 'from-cyan-500 to-blue-600',
+		hoverGradient: 'from-cyan-400 to-blue-500',
 	},
 ];
 
@@ -79,7 +79,7 @@ export default function ProjectTypeSelector() {
 				{projectTypes.map((type) => (
 					<div
 						key={type.id}
-						className="group relative overflow-hidden rounded-2xl bg-gray-900 border border-gray-800 hover:border-gray-700 transition-all duration-300 hover:transform hover:scale-105">
+						className="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-slate-900/60 via-blue-950/40 to-slate-900/60 backdrop-blur-xl border border-blue-900/30 hover:border-blue-700/50 transition-all duration-300 hover:transform hover:scale-105 shadow-lg shadow-blue-900/10">
 						<div
 							className={`absolute inset-0 bg-gradient-to-br ${type.gradient} opacity-10 group-hover:opacity-20 transition-opacity duration-300`}
 						/>
@@ -87,7 +87,7 @@ export default function ProjectTypeSelector() {
 						<div className="relative p-8">
 							<div className="flex items-center justify-between mb-4">
 								<div className="text-4xl">{type.icon}</div>
-								<div className="text-sm text-gray-500 bg-gray-800 px-3 py-1 rounded-full">
+								<div className="text-sm text-slate-400 bg-slate-800/60 px-3 py-1 rounded-full border border-blue-900/20">
 									{type.aspectRatio}
 								</div>
 							</div>

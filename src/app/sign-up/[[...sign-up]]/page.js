@@ -14,7 +14,7 @@ export default function SignUpPage() {
 				<div className="flex justify-center flex-col items-center max-w-md w-full">
 					<div className="text-center mb-8">
 						<h1 className="text-4xl font-bold mb-2 text-white">
-							Join Thumbly
+							Join Craftix
 						</h1>
 						<p className="text-gray-400 text-lg leading-relaxed">
 							Create your account and start generating amazing AI-powered thumbnails

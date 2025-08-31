@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
-import OpenAI from 'openai';
+import { GoogleGenerativeAI } from '@google/generative-ai';
 
-const client = new OpenAI();
+const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY);
 
 export async function POST(request) {
 	try {
@@ -35,16 +35,16 @@ export async function POST(request) {
 			);
 		}
 
-		// Check if we have OpenAI API key
-		if (!process.env.OPENAI_API_KEY) {
+		// Check if we have Google API key
+		if (!process.env.GOOGLE_API_KEY) {
 			return NextResponse.json(
-				{ error: 'OpenAI API key not found.' },
+				{ error: 'Google API key not found.' },
 				{ status: 500 }
 			);
 		}
 
-		// Call OpenAI API for prompt enhancement
-		const refinedPrompt = await enhancePromptWithOpenAI(
+		// Call Google Gemini API for prompt enhancement
+		const refinedPrompt = await enhancePromptWithGemini(
 			originalPrompt,
 			imageMetadata,
 			imageData,
@@ -55,7 +55,7 @@ export async function POST(request) {
 			success: true,
 			originalPrompt,
 			refinedPrompt,
-			method: 'openai',
+			method: 'gemini',
 			suggestions: [
 				'Enhanced for thumbnail creation',
 				'Optimized visual elements',
@@ -64,10 +64,14 @@ export async function POST(request) {
 		});
 	} catch (error) {
 		console.error('Error enhancing prompt:', error);
+		return NextResponse.json(
+			{ error: 'Failed to enhance prompt. Please try again.' },
+			{ status: 500 }
+		);
 	}
 }
 
-async function enhancePromptWithOpenAI(
+async function enhancePromptWithGemini(
 	originalPrompt,
 	imageMetadata,
 	imageData,
@@ -153,9 +157,7 @@ Requirements:
 	const systemPrompt =
 		projectType === 'youtube' ? systemPromptForYouTube : systemPromptForReels;
 
-	const messages = [{ role: 'system', content: systemPrompt }];
-
-	// Create user message with text content
+	// Create user message
 	let userMessage = `Original prompt: "${originalPrompt}"
 ${imageMetadata ? `Image context: ${JSON.stringify(imageMetadata)}` : ''}
 
@@ -163,46 +165,45 @@ Please refine this prompt for creating an effective ${
 		projectType === 'youtube' ? 'YouTube' : 'Reels'
 	} thumbnail.`;
 
-	// If image data is provided, use Vision API
-	if (imageData) {
-		// Remove data URL prefix if present (data:image/jpeg;base64,)
-		const base64Data = imageData.includes(',')
-			? imageData.split(',')[1]
-			: imageData;
-
-		messages.push({
-			role: 'user',
-			content: [
-				{
-					type: 'text',
-					text: userMessage,
-				},
-				{
-					type: 'image_url',
-					image_url: {
-						url: `data:image/jpeg;base64,${base64Data}`,
-						detail: 'auto',
-					},
-				},
-			],
+	try {
+		// Choose model based on whether we have image data
+		const model = genAI.getGenerativeModel({
+			model: imageData ? 'gemini-1.5-flash' : 'gemini-1.5-flash',
 		});
-	} else {
-		messages.push({
-			role: 'user',
-			content: userMessage,
-		});
+
+		let result;
+
+		if (imageData) {
+			// Remove data URL prefix if present
+			const base64Data = imageData.includes(',')
+				? imageData.split(',')[1]
+				: imageData;
+
+			// Prepare image for Gemini
+			const imagePart = {
+				inlineData: {
+					data: base64Data,
+					mimeType: 'image/jpeg', // Adjust if you need to support other formats
+				},
+			};
+
+			// Generate content with both text and image
+			result = await model.generateContent([
+				systemPrompt + '\n\n' + userMessage,
+				imagePart,
+			]);
+		} else {
+			// Generate content with text only
+			result = await model.generateContent(systemPrompt + '\n\n' + userMessage);
+		}
+
+		const response = await result.response;
+		const refinedPrompt = response.text().trim();
+
+		return refinedPrompt || originalPrompt;
+	} catch (error) {
+		console.error('Gemini API error:', error);
+		// Return original prompt as fallback
+		return originalPrompt;
 	}
-
-	const response = await client.chat.completions.create({
-		model: 'gpt-4o-mini',
-		messages: messages,
-	});
-
-	if (!response) {
-		throw new Error(
-			`OpenAI API error: ${response.status} ${response.statusText}`
-		);
-	}
-
-	return response.choices[0]?.message?.content?.trim() || originalPrompt;
 }

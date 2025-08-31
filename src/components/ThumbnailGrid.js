@@ -159,13 +159,13 @@ export default function ThumbnailGrid({
 	};
 
 	return (
-		<div className="bg-[#111111] rounded-lg border border-gray-800 p-6">
+		<div className="backdrop-blur-xl bg-gradient-to-br from-slate-900/60 via-blue-950/50 to-slate-900/60 border border-blue-900/40 rounded-2xl p-6 shadow-xl shadow-blue-500/10">
 			<div className="flex items-center justify-between mb-6">
 				<div>
-					<h2 className="text-lg font-semibold text-white">
+					<h2 className="text-lg font-bold bg-gradient-to-r from-white to-slate-200 bg-clip-text text-transparent">
 						Generated Thumbnails
 					</h2>
-					<p className="text-sm text-gray-400">
+					<p className="text-sm text-slate-400 font-medium">
 						{thumbnails.length} variations ready
 					</p>
 				</div>
@@ -173,7 +173,7 @@ export default function ThumbnailGrid({
 					<button
 						data-download-all
 						onClick={handleDownloadAll}
-						className="bg-orange-500 text-white px-4 py-2 rounded-lg font-medium hover:bg-orange-600 transition-colors flex items-center space-x-2">
+						className="bg-gradient-to-r from-orange-600 via-orange-500 to-orange-600 hover:from-orange-500 hover:via-orange-400 hover:to-orange-500 text-white px-5 py-2.5 rounded-xl font-bold transition-all duration-300 shadow-lg hover:shadow-orange-500/30 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-orange-400/40 flex items-center space-x-2">
 						<svg
 							className="w-4 h-4"
 							fill="none"
@@ -192,20 +192,22 @@ export default function ThumbnailGrid({
 			</div>
 
 			{thumbnails.length === 0 ? (
-				<div className="text-center py-12 text-gray-500">
-					<svg
-						className="w-12 h-12 mx-auto mb-4 text-gray-600"
-						fill="none"
-						stroke="currentColor"
-						viewBox="0 0 24 24">
-						<path
-							strokeLinecap="round"
-							strokeLinejoin="round"
-							strokeWidth={1}
-							d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.414-1.414a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
-						/>
-					</svg>
-					<p>No thumbnails generated yet</p>
+				<div className="text-center py-16">
+					<div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-gradient-to-r from-slate-700/40 to-slate-800/40 border border-slate-600 flex items-center justify-center">
+						<svg
+							className="w-8 h-8 text-slate-400"
+							fill="none"
+							stroke="currentColor"
+							viewBox="0 0 24 24">
+							<path
+								strokeLinecap="round"
+								strokeLinejoin="round"
+								strokeWidth={1.5}
+								d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.414-1.414a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+							/>
+						</svg>
+					</div>
+					<p className="text-slate-400 font-medium">No thumbnails generated yet</p>
 				</div>
 			) : (
 				<>
@@ -220,30 +222,30 @@ export default function ThumbnailGrid({
 								return (
 									<div
 										key={thumbnail.id}
-										className="bg-[#0a0a0a] border border-gray-800 rounded-lg p-4 hover:border-gray-700 transition-colors">
+										className="backdrop-blur-md bg-slate-900/40 border border-slate-700/60 rounded-xl p-5 hover:border-blue-400/60 hover:bg-slate-800/40 transition-all duration-300 shadow-lg shadow-blue-500/5">
 										{/* Image Display - Optimized for 9:16 */}
-										<div className="relative w-full aspect-[9/16] bg-gray-900 rounded-lg overflow-hidden mb-4 max-h-80">
+										<div className="relative w-full aspect-[9/16] bg-gradient-to-br from-slate-800/40 to-slate-900/40 rounded-xl overflow-hidden mb-4 max-h-80 border border-slate-700/40">
 											{thumbnail.url ? (
 												<Image
 													src={thumbnail.url}
 													alt={`Reel ${variationNumber}`}
 													fill
-													className="object-contain rounded-lg"
+													className="object-contain rounded-xl"
 													sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
 												/>
 											) : (
-												<div className="absolute inset-0 flex items-center justify-center text-gray-500 text-sm">
+												<div className="absolute inset-0 flex items-center justify-center text-slate-400 font-medium">
 													Preview {variationNumber}
 												</div>
 											)}
 										</div>
 
 										{/* Thumbnail Info */}
-										<div className="mb-3">
-											<h3 className="text-sm font-medium text-gray-200">
+										<div className="mb-4">
+											<h3 className="text-sm font-bold text-white">
 												Variation {variationNumber}
 											</h3>
-											<p className="text-xs text-gray-500 mt-1">
+											<p className="text-xs text-slate-400 mt-1 font-medium">
 												{new Date(
 													thumbnail.createdAt || Date.now()
 												).toLocaleTimeString()}
@@ -251,11 +253,11 @@ export default function ThumbnailGrid({
 										</div>
 
 										{/* Actions - Stacked for reel layout */}
-										<div className="space-y-2">
+										<div className="space-y-3">
 											{/* Download Button */}
 											<button
 												onClick={() => handleDownload(thumbnail)}
-												className="w-full bg-orange-500 hover:bg-orange-600 text-white px-3 py-2 rounded-lg font-medium flex items-center justify-center space-x-2 transition-colors text-sm">
+												className="w-full bg-gradient-to-r from-orange-600 via-orange-500 to-orange-600 hover:from-orange-500 hover:via-orange-400 hover:to-orange-500 text-white px-4 py-2.5 rounded-xl font-bold flex items-center justify-center space-x-2 transition-all duration-300 shadow-lg hover:shadow-orange-500/30 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-orange-400/40">
 												<svg
 													className="w-4 h-4"
 													fill="none"
@@ -272,10 +274,10 @@ export default function ThumbnailGrid({
 											</button>
 
 											{/* Edit and Delete Buttons - Side by side */}
-											<div className="flex space-x-2">
+											<div className="flex space-x-3">
 												<button
 													onClick={() => handleEdit(thumbnail)}
-													className="flex-1 bg-blue-500 hover:bg-blue-600 text-white px-3 py-2 rounded-lg font-medium flex items-center justify-center transition-colors text-sm"
+													className="flex-1 bg-gradient-to-r from-blue-600 via-cyan-500 to-blue-600 hover:from-blue-500 hover:via-cyan-400 hover:to-blue-500 text-white px-4 py-2.5 rounded-xl font-bold flex items-center justify-center transition-all duration-300 shadow-lg hover:shadow-blue-500/30 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-cyan-400/40"
 													title="Edit this reel">
 													<svg
 														className="w-4 h-4"
@@ -293,7 +295,7 @@ export default function ThumbnailGrid({
 												<button
 													onClick={() => handleDelete(thumbnail)}
 													disabled={deletingThumbnails.has(thumbnail.id)}
-													className="flex-1 bg-red-500 hover:bg-red-600 disabled:opacity-50 disabled:cursor-not-allowed text-white px-3 py-2 rounded-lg font-medium flex items-center justify-center transition-colors text-sm"
+													className="flex-1 bg-gradient-to-r from-red-600 to-red-500 hover:from-red-500 hover:to-red-400 disabled:opacity-50 disabled:cursor-not-allowed text-white px-4 py-2.5 rounded-xl font-bold flex items-center justify-center transition-all duration-300 shadow-lg hover:shadow-red-500/30 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-red-400/40"
 													title="Delete reel">
 													{deletingThumbnails.has(thumbnail.id) ? (
 														<div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
@@ -328,19 +330,19 @@ export default function ThumbnailGrid({
 								return (
 									<div
 										key={thumbnail.id}
-										className="bg-[#0a0a0a] border border-gray-800 rounded-lg p-6 hover:border-gray-700 transition-colors">
+										className="backdrop-blur-md bg-slate-900/40 border border-slate-700/60 rounded-xl p-6 hover:border-blue-400/60 hover:bg-slate-800/40 transition-all duration-300 shadow-lg shadow-blue-500/5">
 										{/* Image Display - Standard for YouTube */}
-										<div className="relative w-full h-64 bg-gray-900 rounded-lg overflow-hidden mb-4">
+										<div className="relative w-full h-64 bg-gradient-to-br from-slate-800/40 to-slate-900/40 rounded-xl overflow-hidden mb-5 border border-slate-700/40">
 											{thumbnail.url ? (
 												<Image
 													src={thumbnail.url}
 													alt={`Thumbnail ${variationNumber}`}
 													fill
-													className="object-contain rounded-lg"
+													className="object-contain rounded-xl"
 													sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 60vw"
 												/>
 											) : (
-												<div className="absolute inset-0 flex items-center justify-center text-gray-500 text-sm">
+												<div className="absolute inset-0 flex items-center justify-center text-slate-400 font-medium">
 													Preview {variationNumber}
 												</div>
 											)}
@@ -348,27 +350,27 @@ export default function ThumbnailGrid({
 										{/* Thumbnail Info and Actions */}
 										<div className="flex items-center justify-between">
 											<div>
-												<h3 className="text-base font-medium text-gray-200">
+												<h3 className="text-base font-bold text-white">
 													Variation {variationNumber}
 												</h3>
-												<p className="text-sm text-gray-500 mt-1">
+												<p className="text-sm text-slate-400 mt-1 font-medium">
 													Generated at{' '}
 													{new Date(
 														thumbnail.createdAt || Date.now()
 													).toLocaleTimeString()}
 												</p>
 											</div>
-											<div className="flex items-center space-x-2">
+											<div className="flex items-center space-x-3">
 												{/* Download Button */}
 												<button
 													onClick={() => handleDownload(thumbnail)}
-													className="bg-orange-500 hover:bg-orange-600 text-white px-4 py-1 rounded-lg font-medium flex items-center space-x-2 transition-colors">
+													className="bg-gradient-to-r from-orange-600 via-orange-500 to-orange-600 hover:from-orange-500 hover:via-orange-400 hover:to-orange-500 text-white px-5 py-2 rounded-xl font-bold flex items-center space-x-2 transition-all duration-300 shadow-lg hover:shadow-orange-500/30 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-orange-400/40">
 													<span>Download</span>
 												</button>
 												{/* Edit Button */}
 												<button
 													onClick={() => handleEdit(thumbnail)}
-													className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-2 rounded-lg font-medium flex items-center justify-center transition-colors"
+													className="bg-gradient-to-r from-blue-600 via-cyan-500 to-blue-600 hover:from-blue-500 hover:via-cyan-400 hover:to-blue-500 text-white px-3 py-2 rounded-xl font-bold flex items-center justify-center transition-all duration-300 shadow-lg hover:shadow-blue-500/30 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-cyan-400/40"
 													title="Edit this thumbnail">
 													<svg
 														className="w-4 h-4"
@@ -387,7 +389,7 @@ export default function ThumbnailGrid({
 												<button
 													onClick={() => handleDelete(thumbnail)}
 													disabled={deletingThumbnails.has(thumbnail.id)}
-													className="bg-red-500 hover:bg-red-600 disabled:opacity-50 disabled:cursor-not-allowed text-white px-3 py-2 rounded-lg font-medium flex items-center justify-center transition-colors"
+													className="bg-gradient-to-r from-red-600 to-red-500 hover:from-red-500 hover:to-red-400 disabled:opacity-50 disabled:cursor-not-allowed text-white px-3 py-2 rounded-xl font-bold flex items-center justify-center transition-all duration-300 shadow-lg hover:shadow-red-500/30 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-red-400/40"
 													title="Delete thumbnail">
 													{deletingThumbnails.has(thumbnail.id) ? (
 														<div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>

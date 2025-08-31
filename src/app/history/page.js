@@ -13,8 +13,13 @@ export default function History() {
 	// Handle loading state
 	if (!isLoaded) {
 		return (
-			<div className="flex items-center justify-center min-h-screen bg-[#0a0a0a]">
-				<div className="w-8 h-8 border-2 border-orange-500 border-t-transparent rounded-full animate-spin"></div>
+			<div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-slate-950 via-blue-950 to-slate-900">
+				<div className="flex flex-col items-center gap-4">
+					<div className="w-12 h-12 border-3 border-blue-400 border-t-transparent rounded-full animate-spin shadow-lg shadow-blue-500/30"></div>
+					<div className="text-xl font-semibold bg-gradient-to-r from-blue-400 via-cyan-300 to-blue-400 bg-clip-text text-transparent">
+						Loading Craftix...
+					</div>
+				</div>
 			</div>
 		);
 	}
@@ -26,7 +31,7 @@ export default function History() {
 	}
 
 	return (
-		<div className="flex min-h-screen bg-[#0a0a0a]">
+		<div className="flex min-h-screen bg-gradient-to-br from-slate-950 via-blue-950/90 to-slate-900">
 			<Sidebar />
 			<div className="flex-1">
 				<Topbar title="Recents" />

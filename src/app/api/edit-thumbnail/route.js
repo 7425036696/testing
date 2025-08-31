@@ -1,4 +1,4 @@
-import 'dotenv/config';
+
 import { NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
 import { connectDB } from '@/lib/mongo';

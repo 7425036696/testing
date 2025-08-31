@@ -80,8 +80,11 @@ export default function ProjectPage() {
 	// Handle loading state
 	if (!isLoaded || projectLoading) {
 		return (
-			<div className="flex items-center justify-center min-h-screen bg-[#0a0a0a]">
-				<div className="w-8 h-8 border-2 border-orange-500 border-t-transparent rounded-full animate-spin"></div>
+			<div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-slate-950 via-blue-950 to-slate-900">
+				<div className="flex flex-col items-center gap-4">
+					<div className="w-12 h-12 border-2 border-blue-500 border-t-transparent rounded-full animate-spin shadow-lg shadow-blue-500/30"></div>
+					<p className="text-slate-300 font-medium">Loading project...</p>
+				</div>
 			</div>
 		);
 	}
@@ -95,17 +98,22 @@ export default function ProjectPage() {
 	// Project not found
 	if (!project) {
 		return (
-			<div className="flex items-center justify-center min-h-screen bg-[#0a0a0a]">
-				<div className="text-center">
-					<h1 className="text-2xl font-bold text-white mb-2">
+			<div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-slate-950 via-blue-950 to-slate-900">
+				<div className="text-center backdrop-blur-xl bg-slate-900/40 border border-blue-900/40 rounded-2xl p-8 shadow-xl shadow-blue-500/10">
+					<div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-r from-red-500/20 to-orange-500/20 border border-red-500/30 flex items-center justify-center">
+						<svg className="w-8 h-8 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+							<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.732-.833-2.464 0L3.34 16.5c-.77.833.192 2.5 1.732 2.5z" />
+						</svg>
+					</div>
+					<h1 className="text-2xl font-bold text-white mb-3">
 						Project Not Found
 					</h1>
-					<p className="text-gray-400 mb-4">
-						The project you&apos;re looking for doesn&apos;t exist.
+					<p className="text-slate-300 mb-6 max-w-md">
+						The project you&apos;re looking for doesn&apos;t exist or you don&apos;t have access to it.
 					</p>
 					<button
 						onClick={() => router.push('/dashboard')}
-						className="bg-orange-500 hover:bg-orange-600 text-white px-6 py-2 rounded-lg">
+						className="px-6 py-3 rounded-xl text-base font-bold bg-gradient-to-r from-blue-600 via-cyan-500 to-blue-600 hover:from-blue-500 hover:via-cyan-400 hover:to-blue-500 text-white shadow-lg hover:shadow-blue-500/30 hover:scale-105 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-cyan-400/40">
 						Back to Dashboard
 					</button>
 				</div>
@@ -263,16 +271,18 @@ export default function ProjectPage() {
 	};
 
 	return (
-		<div className="flex min-h-screen bg-[#0a0a0a]">
+		<div className="flex min-h-screen bg-gradient-to-br from-slate-950 via-blue-950 to-slate-900">
 			<Sidebar />
 			<div className="flex-1">
 				<Topbar
 					title={
 						<div className="flex items-center space-x-3">
-							<span className="text-2xl">{getProjectIcon()}</span>
+							<div className="w-10 h-10 rounded-xl bg-gradient-to-r from-blue-500 via-cyan-400 to-blue-500 flex items-center justify-center text-white text-lg font-extrabold shadow-lg shadow-blue-500/30 border-2 border-blue-400/30">
+								{getProjectIcon()}
+							</div>
 							<div>
-								<h1 className="text-xl font-bold">{project.name}</h1>
-								<p className="text-sm text-gray-400 capitalize">
+								<h1 className="text-xl font-bold bg-gradient-to-r from-blue-400 via-cyan-300 to-blue-400 bg-clip-text text-transparent">{project.name}</h1>
+								<p className="text-sm text-slate-400 capitalize font-medium">
 									{project.type} • {project.aspectRatio}
 								</p>
 							</div>
@@ -282,28 +292,33 @@ export default function ProjectPage() {
 
 				<div className="p-6 space-y-6">
 					{/* Project Info */}
-					<div className="bg-gray-900 border border-gray-800 rounded-lg p-4">
+					<div className="backdrop-blur-xl bg-gradient-to-br from-slate-900/60 via-blue-950/50 to-slate-900/60 border border-blue-900/40 rounded-2xl p-6 shadow-xl shadow-blue-500/10">
 						<div className="flex items-center justify-between">
-							<div className="flex items-center space-x-4">
-								<div className="text-3xl">{getProjectIcon()}</div>
+							<div className="flex items-center space-x-5">
+								<div className="w-16 h-16 rounded-2xl bg-gradient-to-r from-blue-500/20 via-cyan-400/20 to-blue-500/20 border border-blue-400/30 flex items-center justify-center text-3xl shadow-lg shadow-blue-500/20">
+									{getProjectIcon()}
+								</div>
 								<div>
-									<h2 className="text-lg font-semibold text-white">
+									<h2 className="text-xl font-bold bg-gradient-to-r from-white to-slate-200 bg-clip-text text-transparent">
 										{project.name}
 									</h2>
-									<p className="text-sm text-gray-400 capitalize">
+									<p className="text-slate-400 capitalize font-medium">
 										{project.type} Project • {project.aspectRatio} aspect ratio
 									</p>
 								</div>
 							</div>
-							<div className="flex items-center space-x-3">
+							<div className="flex items-center space-x-4">
 								<button
 									onClick={() => router.push('/dashboard')}
-									className="text-gray-400 hover:text-white transition-colors text-sm">
-									← Back to Dashboard
+									className="px-4 py-2 rounded-xl text-slate-300 hover:text-white border border-slate-700 hover:border-blue-400/60 hover:bg-slate-800/60 bg-slate-900/40 backdrop-blur-md transition-all duration-300 shadow hover:shadow-blue-400/10 focus:outline-none focus:ring-2 focus:ring-blue-400/40 font-medium flex items-center gap-2">
+									<svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+										<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+									</svg>
+									Back to Dashboard
 								</button>
 								<button
 									onClick={() => setShowConversationHistory(true)}
-									className="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg text-sm font-medium transition-colors flex items-center space-x-2"
+									className="px-5 py-2.5 rounded-xl text-base font-bold bg-gradient-to-r from-purple-600 via-indigo-500 to-purple-600 hover:from-purple-500 hover:via-indigo-400 hover:to-purple-500 text-white shadow-lg hover:shadow-purple-500/30 hover:scale-105 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-indigo-400/40 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 flex items-center space-x-2"
 									disabled={thumbnails.length === 0}>
 									<svg
 										className="w-4 h-4"
@@ -356,12 +371,17 @@ export default function ProjectPage() {
 
 					{/* Loading State */}
 					{isLoading && (
-						<div className="flex items-center justify-center py-12">
-							<div className="flex items-center space-x-3">
-								<div className="w-6 h-6 border-2 border-orange-500 border-t-transparent rounded-full animate-spin"></div>
-								<span className="text-gray-300 font-medium">
-									Generating thumbnails...
-								</span>
+						<div className="flex items-center justify-center py-16">
+							<div className="backdrop-blur-xl bg-slate-900/40 border border-blue-900/40 rounded-2xl p-8 shadow-xl shadow-blue-500/10">
+								<div className="flex flex-col items-center space-y-4">
+									<div className="w-8 h-8 border-2 border-blue-500 border-t-transparent rounded-full animate-spin shadow-lg shadow-blue-500/30"></div>
+									<span className="text-slate-200 font-bold text-lg bg-gradient-to-r from-blue-400 via-cyan-300 to-blue-400 bg-clip-text text-transparent">
+										Generating thumbnails...
+									</span>
+									<div className="w-32 h-1 bg-slate-800 rounded-full overflow-hidden">
+										<div className="w-full h-full bg-gradient-to-r from-blue-500 via-cyan-400 to-blue-500 animate-pulse"></div>
+									</div>
+								</div>
 							</div>
 						</div>
 					)}
