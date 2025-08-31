@@ -19,7 +19,10 @@ export default function UploadForm({
 	const [prompt, setPrompt] = useState('');
 	const [showRefinement, setShowRefinement] = useState(false);
 	const [previewUrl, setPreviewUrl] = useState(null);
+	const [fileSizeError, setFileSizeError] = useState(null);
 	const inputRef = useRef(null);
+
+	const MAX_FILE_SIZE = 3 * 1024 * 1024; // 3MB in bytes
 
 	const handleDrag = (e) => {
 		e.preventDefault();
@@ -48,10 +51,27 @@ export default function UploadForm({
 		}
 	};
 
+	const validateFileSize = (uploadedFile) => {
+		if (uploadedFile.size > MAX_FILE_SIZE) {
+			const fileSizeMB = (uploadedFile.size / 1024 / 1024).toFixed(2);
+			setFileSizeError(`File size (${fileSizeMB}MB) exceeds 3MB limit. Please choose a smaller image.`);
+			return false;
+		}
+		setFileSizeError(null);
+		return true;
+	};
+
 	const handleFile = (uploadedFile) => {
 		// Clean up previous preview URL
 		if (previewUrl) {
 			URL.revokeObjectURL(previewUrl);
+		}
+
+		// Validate file size first
+		if (!validateFileSize(uploadedFile)) {
+			setFile(null);
+			setPreviewUrl(null);
+			return;
 		}
 
 		setFile(uploadedFile);
@@ -64,6 +84,13 @@ export default function UploadForm({
 			setPreviewUrl(null);
 		}
 	};
+
+	// Clear file size error when file is removed
+	useEffect(() => {
+		if (!file) {
+			setFileSizeError(null);
+		}
+	}, [file]);
 
 	// Cleanup preview URL on unmount
 	useEffect(() => {
@@ -85,6 +112,12 @@ export default function UploadForm({
 
 	const handleSubmit = (e) => {
 		e.preventDefault();
+		
+		// Check file size before submission
+		if (file && !validateFileSize(file)) {
+			return;
+		}
+
 		if (editingThumbnail && prompt) {
 			// Edit mode: directly edit without showing refinement
 			handleDirectGenerate(e);
@@ -96,6 +129,12 @@ export default function UploadForm({
 
 	const handleDirectGenerate = (e) => {
 		e.preventDefault();
+		
+		// Check file size before generation
+		if (file && !validateFileSize(file)) {
+			return;
+		}
+
 		if (editingThumbnail && prompt) {
 			// Edit mode: use the selected thumbnail for editing
 			// We'll need to pass the thumbnail URL as reference
@@ -189,6 +228,8 @@ export default function UploadForm({
 							className={`border-2 border-dashed rounded-xl p-8 text-center transition-all duration-300 ${
 								dragActive
 									? 'border-blue-400 bg-blue-900/30 shadow-lg shadow-blue-500/20'
+									: fileSizeError
+									? 'border-red-400 bg-red-900/30 shadow-lg shadow-red-500/20'
 									: 'border-slate-600 hover:border-blue-400/60 hover:bg-slate-800/30'
 							}`}
 							onDragEnter={handleDrag}
@@ -203,7 +244,37 @@ export default function UploadForm({
 								onChange={handleChange}
 							/>
 
-							{file ? (
+							{fileSizeError ? (
+								/* File Size Error Display */
+								<div className="space-y-3">
+									<div className="w-12 h-12 bg-gradient-to-r from-red-500/20 to-red-600/20 border border-red-500/40 rounded-xl flex items-center justify-center mx-auto shadow-lg shadow-red-500/20">
+										<svg
+											className="w-6 h-6 text-red-400"
+											fill="none"
+											stroke="currentColor"
+											viewBox="0 0 24 24">
+											<path
+												strokeLinecap="round"
+												strokeLinejoin="round"
+												strokeWidth={2}
+												d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.732-.833-2.464 0L4.35 16.5c-.77.833.192 2.5 1.732 2.5z"
+											/>
+										</svg>
+									</div>
+									<div className="text-red-400 font-bold text-sm">
+										File Too Large
+									</div>
+									<div className="text-red-300 text-sm font-medium">
+										{fileSizeError}
+									</div>
+									<button
+										type="button"
+										onClick={() => inputRef.current.click()}
+										className="text-blue-400 hover:text-cyan-300 font-bold transition-colors duration-300">
+										Choose a smaller file
+									</button>
+								</div>
+							) : file ? (
 								<div className="space-y-3">
 									<div className="w-12 h-12 bg-gradient-to-r from-emerald-500/20 to-green-500/20 border border-emerald-500/40 rounded-xl flex items-center justify-center mx-auto shadow-lg shadow-emerald-500/20">
 										<svg
@@ -258,14 +329,14 @@ export default function UploadForm({
 										</button>
 									</div>
 									<div className="text-sm text-slate-500 font-medium">
-										JPG, PNG, GIF • Max 10MB
+										JPG, PNG, GIF • Max 3MB
 									</div>
 								</div>
 							)}
 						</div>
 
 						{/* Image Preview */}
-						{previewUrl && (
+						{previewUrl && !fileSizeError && (
 							<div className="space-y-3">
 								<label className="block text-sm font-bold text-slate-300">
 									Preview
@@ -306,6 +377,39 @@ export default function UploadForm({
 					</div>
 				)}
 
+				{/* File Size Error Message */}
+				{fileSizeError && (
+					<div className="backdrop-blur-md bg-gradient-to-r from-red-900/30 via-red-800/30 to-red-900/30 border border-red-700/60 rounded-xl p-4 shadow-lg shadow-red-500/10">
+						<div className="flex items-start space-x-3">
+							<div className="w-5 h-5 mt-0.5 flex-shrink-0 rounded-full bg-gradient-to-r from-red-500/20 to-red-600/20 border border-red-400/40 flex items-center justify-center">
+								<svg
+									className="w-3 h-3 text-red-400"
+									fill="none"
+									stroke="currentColor"
+									viewBox="0 0 24 24">
+									<path
+										strokeLinecap="round"
+										strokeLinejoin="round"
+										strokeWidth={2}
+										d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.732-.833-2.464 0L4.35 16.5c-.77.833.192 2.5 1.732 2.5z"
+									/>
+								</svg>
+							</div>
+							<div className="text-red-200 font-medium text-sm">
+								{fileSizeError}
+							</div>
+						</div>
+						<div className="mt-3 text-xs text-red-300/80">
+							<strong>Tips to reduce file size:</strong>
+							<ul className="mt-1 space-y-1 list-disc list-inside">
+								<li>Use image compression tools or apps</li>
+								<li>Reduce image dimensions (max 1920x1080 recommended)</li>
+								<li>Save as JPEG instead of PNG for photos</li>
+							</ul>
+						</div>
+					</div>
+				)}
+
 				{/* Prompt Input */}
 				<div>
 					<label
@@ -336,7 +440,7 @@ export default function UploadForm({
 						<button
 							type="button"
 							onClick={handleDirectGenerate}
-							disabled={!editingThumbnail || !prompt || isLoading}
+							disabled={!editingThumbnail || !prompt || isLoading || fileSizeError}
 							className="w-full bg-gradient-to-r from-orange-600 via-orange-500 to-orange-600 hover:from-orange-500 hover:via-orange-400 hover:to-orange-500 text-white py-3 px-6 rounded-xl font-bold disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 shadow-lg hover:shadow-orange-500/30 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-orange-400/40 flex items-center justify-center space-x-3">
 							{isLoading ? (
 								<>
@@ -367,7 +471,7 @@ export default function UploadForm({
 							{/* Enhanced Generation Button */}
 							<button
 								type="submit"
-								disabled={!file || !prompt || isLoading}
+								disabled={!file || !prompt || isLoading || fileSizeError}
 								className="w-full bg-gradient-to-r from-orange-600 via-orange-500 to-orange-600 hover:from-orange-500 hover:via-orange-400 hover:to-orange-500 text-white py-3 px-6 rounded-xl font-bold disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 shadow-lg hover:shadow-orange-500/30 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-orange-400/40 flex items-center justify-center space-x-3">
 								{isLoading ? (
 									<>
@@ -397,7 +501,7 @@ export default function UploadForm({
 							<button
 								type="button"
 								onClick={handleDirectGenerate}
-								disabled={!file || !prompt || isLoading}
+								disabled={!file || !prompt || isLoading || fileSizeError}
 								className="w-full px-5 py-2.5 rounded-xl text-base font-bold text-slate-200 border border-slate-700 hover:border-blue-400/60 hover:text-white hover:bg-slate-800/60 bg-slate-900/40 backdrop-blur-md transition-all duration-300 shadow hover:shadow-blue-400/10 focus:outline-none focus:ring-2 focus:ring-blue-400/40 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2">
 								<svg
 									className="w-4 h-4"
@@ -418,7 +522,7 @@ export default function UploadForm({
 				</div>
 
 				{/* Info Section */}
-				{!editingThumbnail && (
+				{!editingThumbnail && !fileSizeError && (
 					<div className="backdrop-blur-md bg-gradient-to-r from-blue-900/30 via-indigo-900/30 to-blue-900/30 border border-blue-700/60 rounded-xl p-4 shadow-lg shadow-blue-500/10 mt-6">
 						<div className="flex items-start space-x-3">
 							<div className="w-5 h-5 mt-0.5 flex-shrink-0 rounded-full bg-gradient-to-r from-blue-500/20 to-cyan-500/20 border border-blue-400/40 flex items-center justify-center">

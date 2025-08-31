@@ -3,8 +3,24 @@ import { GoogleGenerativeAI } from '@google/generative-ai';
 
 const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY);
 
+// Vercel limits
+const MAX_REQUEST_SIZE = 4.5 * 1024 * 1024; // 4.5MB (leave buffer for headers)
+const MAX_IMAGE_SIZE = 4 * 1024 * 1024; // 4MB for base64 image
+
 export async function POST(request) {
 	try {
+		// Check content length before parsing
+		const contentLength = request.headers.get('content-length');
+		if (contentLength && parseInt(contentLength) > MAX_REQUEST_SIZE) {
+			return NextResponse.json(
+				{ 
+					error: 'Request too large. Please use a smaller image (max 3MB).',
+					code: 'REQUEST_TOO_LARGE'
+				},
+				{ status: 413 }
+			);
+		}
+
 		const body = await request.json();
 		const { originalPrompt, imageMetadata, imageData, projectType } = body;
 
@@ -20,19 +36,35 @@ export async function POST(request) {
 		if (!projectType || !['youtube', 'reels'].includes(projectType)) {
 			return NextResponse.json(
 				{
-					error:
-						'Project type is required and must be either "youtube" or "reels"',
+					error: 'Project type is required and must be either "youtube" or "reels"',
 				},
 				{ status: 400 }
 			);
 		}
 
-		// Validate image data if provided
-		if (imageData && typeof imageData !== 'string') {
-			return NextResponse.json(
-				{ error: 'Image data must be a base64 string' },
-				{ status: 400 }
-			);
+		// Validate and compress image data if provided
+		let processedImageData = null;
+		if (imageData) {
+			if (typeof imageData !== 'string') {
+				return NextResponse.json(
+					{ error: 'Image data must be a base64 string' },
+					{ status: 400 }
+				);
+			}
+
+			// Check image size
+			const imageSizeBytes = (imageData.length * 3) / 4; // Rough base64 size calculation
+			if (imageSizeBytes > MAX_IMAGE_SIZE) {
+				return NextResponse.json(
+					{ 
+						error: 'Image too large. Please use an image smaller than 3MB.',
+						code: 'IMAGE_TOO_LARGE'
+					},
+					{ status: 413 }
+				);
+			}
+
+			processedImageData = imageData;
 		}
 
 		// Check if we have Google API key
@@ -47,7 +79,7 @@ export async function POST(request) {
 		const refinedPrompt = await enhancePromptWithGemini(
 			originalPrompt,
 			imageMetadata,
-			imageData,
+			processedImageData,
 			projectType
 		);
 
@@ -64,6 +96,18 @@ export async function POST(request) {
 		});
 	} catch (error) {
 		console.error('Error enhancing prompt:', error);
+		
+		// Handle specific error types
+		if (error.message?.includes('413') || error.message?.includes('too large')) {
+			return NextResponse.json(
+				{ 
+					error: 'Request too large. Please use a smaller image.',
+					code: 'REQUEST_TOO_LARGE'
+				},
+				{ status: 413 }
+			);
+		}
+
 		return NextResponse.json(
 			{ error: 'Failed to enhance prompt. Please try again.' },
 			{ status: 500 }
@@ -168,7 +212,7 @@ Please refine this prompt for creating an effective ${
 	try {
 		// Choose model based on whether we have image data
 		const model = genAI.getGenerativeModel({
-			model: imageData ? 'gemini-1.5-flash' : 'gemini-1.5-flash',
+			model: 'gemini-1.5-flash', // Use consistent model
 		});
 
 		let result;
@@ -183,7 +227,7 @@ Please refine this prompt for creating an effective ${
 			const imagePart = {
 				inlineData: {
 					data: base64Data,
-					mimeType: 'image/jpeg', // Adjust if you need to support other formats
+					mimeType: 'image/jpeg', // You might want to detect actual MIME type
 				},
 			};
 
@@ -207,3 +251,12 @@ Please refine this prompt for creating an effective ${
 		return originalPrompt;
 	}
 }
+
+// Add configuration for Vercel
+export const config = {
+	api: {
+		bodyParser: {
+			sizeLimit: '4mb', // Set explicit limit
+		},
+	},
+};
