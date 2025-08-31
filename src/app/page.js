@@ -201,28 +201,31 @@ export default function HomePage() {
 								<div className="flex justify-center">
 									<div className="grid grid-cols-2 lg:grid-cols-4 gap-6 max-w-4xl w-full">
 										{reelSampleImages.map((item, index) => (
-											<div
-												key={item}
-												className="group relative bg-gradient-to-br from-slate-800/60 to-slate-900/60 backdrop-blur-sm rounded-2xl overflow-hidden border border-slate-700/50 hover:border-purple-400/50 transition-all duration-500 hover:bg-slate-800/80 hover:scale-105 hover:shadow-2xl hover:shadow-purple-500/20">
-												<div className="aspect-[9/16] bg-slate-800 relative overflow-hidden">
-													<Image
-														src={item}
-														alt={`Reel Example ${index + 1}`}
-														fill
-														className="object-cover group-hover:scale-110 transition-transform duration-700"
-													/>
-													<div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-												</div>
-												<div className="p-4 border-t border-slate-700/50">
-													<div className="text-center">
-														<div className="flex items-center justify-center gap-2">
-															<div className="w-2 h-2 bg-green-400 rounded-full animate-pulse shadow-lg shadow-green-400/50"></div>
-															<span className="text-slate-300 text-sm font-medium">2.8s</span>
-														</div>
-													</div>
-												</div>
-											</div>
-										))}
+  <div
+    key={item}
+    className="group relative w-48 bg-gradient-to-br from-slate-800/60 to-slate-900/60 backdrop-blur-sm rounded-2xl overflow-hidden border border-slate-700/50 hover:border-purple-400/50 transition-all duration-500 hover:bg-slate-800/80 hover:scale-105 hover:shadow-2xl hover:shadow-purple-500/20">
+    
+    <div className="aspect-[11/20] bg-slate-800 relative overflow-hidden">
+      <Image
+        src={item}
+        alt={`Reel Example ${index + 1}`}
+        fill
+        className="object-cover group-hover:scale-110 transition-transform duration-700"
+      />
+      <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+    </div>
+
+    <div className="p-4 border-t border-slate-700/50">
+      <div className="text-center">
+        <div className="flex items-center justify-center gap-2">
+          <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse shadow-lg shadow-green-400/50"></div>
+          <span className="text-slate-300 text-sm font-medium">2.8s</span>
+        </div>
+      </div>
+    </div>
+  </div>
+))}
+
 									</div>
 								</div>
 							</div>
